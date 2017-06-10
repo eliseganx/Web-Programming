@@ -1,0 +1,9 @@
+head, body {
+  text-align: center;
+  font-family: "Verdana";
+}
+
+#img2 {
+  width: 25%;
+  height: 25%;
+}
