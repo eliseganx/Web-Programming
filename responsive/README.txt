@@ -5,3 +5,5 @@ README
 2. N/A
 
 3. The assignment took about 2 hours.
+
+Note: I had to remake the responsive folder after the due date because I was having trouble making a new folder for the next assignment
