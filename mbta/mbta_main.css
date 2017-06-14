@@ -1,8 +1,15 @@
 html {
+  height: 100%;
   font-family: Verdana;
 }
 
 body {
+  height: 100%;
   margin: 0px;
   padding: 0px;
+}
+
+#final_map {
+  height: 100%;
+  width: 100%;
 }
