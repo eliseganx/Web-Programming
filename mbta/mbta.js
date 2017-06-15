@@ -7,11 +7,17 @@ function init() {
   };
   map = new google.maps.Map(document.getElementById("final_map"), map_options);
   setRedLine();
+  setOrangeLine();
 }
 
 function setRedLine() {
   var red_image = {
     url: "RedT.png",
+    scaledSize: new google.maps.Size(23,34)
+  };
+
+  var red_orange_image = {
+    url: "RedOrangeT.png",
     scaledSize: new google.maps.Size(23,34)
   };
 
@@ -114,10 +120,10 @@ function setRedLine() {
   });
   Charles.setMap(map);
 
-  var DowntownCrossing = new google.maps.Marker ( {
+  DowntownCrossing = new google.maps.Marker ( {
     position: {lat: 42.355518, lng: -71.060225},
     title: "Downtown Crossing",
-    icon: red_image
+    icon: red_orange_image
   });
   DowntownCrossing.setMap(map);
 
@@ -170,21 +176,7 @@ function setRedLine() {
   });
   Braintree.setMap(map);
 
-  var before_branch_coordinates = [
-    Alewife.position,
-    Davis.position,
-    Porter.position,
-    Harvard.position,
-    Central.position,
-    Kendall.position,
-    Charles.position,
-    Park.position,
-    DowntownCrossing.position,
-    SouthStation.position,
-    Broadway.position,
-    Andrew.position,
-    JFK.position
-  ]
+  var before_branch_coordinates = [Alewife.position, Davis.position, Porter.position, Harvard.position, Central.position, Kendall.position, Charles.position, Park.position, DowntownCrossing.position, SouthStation.position, Broadway.position, Andrew.position, JFK.position]
   
   var before_branch = new google.maps.Polyline ({
     path: before_branch_coordinates,
@@ -193,14 +185,7 @@ function setRedLine() {
   });
   before_branch.setMap(map);
 
-  var quincy_start_coordinates = [
-    JFK.position,
-    NorthQuincy.position,
-    Wollaston.position,
-    QuincyCenter.position,
-    QuincyAdams.position,
-    Braintree.position
-  ]
+  var quincy_start_coordinates = [JFK.position, NorthQuincy.position, Wollaston.position, QuincyCenter.position, QuincyAdams.position, Braintree.position]
 
   var quincy_start = new google.maps.Polyline ({
     path: quincy_start_coordinates,
@@ -209,13 +194,7 @@ function setRedLine() {
   });
   quincy_start.setMap(map);
 
-  var savin_start_coordinates = [
-    JFK.position,
-    SavinHill.position,
-    FieldsCorner.position,
-    Shawmut.position,
-    Ashmont.position
-  ]
+  var savin_start_coordinates = [JFK.position, SavinHill.position, FieldsCorner.position, Shawmut.position, Ashmont.position]
 
   var savin_start = new google.maps.Polyline ({
     path: savin_start_coordinates,
@@ -223,4 +202,152 @@ function setRedLine() {
     strokeColor: "#FF0000"
   });
   savin_start.setMap(map);
+}
+
+function setOrangeLine() {
+  var orange_image = {
+    url: "OrangeT.png",
+    scaledSize: new google.maps.Size(23,34)
+  };
+
+  var OakGrove = new google.maps.Marker({
+    position: {lat: 42.436942, lng: -71.070889},
+    title: "Oak Grove",
+    icon: orange_image
+  });
+  OakGrove.setMap(map);
+
+  var MaldenCenter = new google.maps.Marker({
+    position: {lat: 42.426715, lng: -71.074349},
+    title: "Malden Center",
+    icon: orange_image
+  });
+  MaldenCenter.setMap(map);
+
+  var Wellington = new google.maps.Marker({
+    position: {lat: 42.401907, lng: -71.077096},
+    title: "Wellington",
+    icon: orange_image
+  });
+  Wellington.setMap(map);
+
+  var Assembly = new google.maps.Marker({
+    position: {lat: 42.392356, lng: -71.077333},
+    title: "Assembly",
+    icon: orange_image
+  });
+  Assembly.setMap(map);
+
+  var SullivanSquare = new google.maps.Marker({
+    position: {lat: 42.384031, lng: -71.07697},
+    title: "Sullivan Square",
+    icon: orange_image
+  });
+  SullivanSquare.setMap(map);
+
+  var CommunityCollege = new google.maps.Marker({
+    position: {lat: 42.3737, lng: -71.0702},
+    title: "Community College",
+    icon: orange_image
+  });
+  CommunityCollege.setMap(map);
+
+  var North = new google.maps.Marker({
+    position: {lat: 42.3657, lng: -71.061},
+    title: "North",
+    icon: orange_image
+  });
+  North.setMap(map);
+
+  var Haymarket = new google.maps.Marker({
+    position: {lat: 42.3633, lng: -71.0582},
+    title: "Haymarket",
+    icon: orange_image
+  });
+  Haymarket.setMap(map);
+
+  var State = new google.maps.Marker({
+    position: {lat: 42.3587, lng: -71.0578},
+    title: "State",
+    icon: orange_image
+  });
+  State.setMap(map);
+
+  var Chinatown = new google.maps.Marker({
+    position: {lat: 42.3522, lng: -71.0627},
+    title: "Chinatown",
+    icon: orange_image
+  });
+  Chinatown.setMap(map);
+
+  var TuftsMed = new google.maps.Marker({
+    position: {lat: 42.3486, lng: -71.0645},
+    title: "Tufts Medical Center",
+    icon: orange_image
+  });
+  TuftsMed.setMap(map);
+
+  var BackBay = new google.maps.Marker({
+    position: {lat: 42.3473, lng: -71.0755},
+    title: "BackBay",
+    icon: orange_image
+  });
+  BackBay.setMap(map);
+
+  var MassAve = new google.maps.Marker({
+    position: {lat: 42.3416, lng: -71.0833},
+    title: "Massachusetts Avenue",
+    icon: orange_image
+  });
+  MassAve.setMap(map);
+
+  var Ruggles = new google.maps.Marker({
+    position: {lat: 42.3362, lng: -71.0895},
+    title: "Ruggles",
+    icon: orange_image
+  });
+  Ruggles.setMap(map);
+
+  var RoxburyCrossing = new google.maps.Marker({
+    position: {lat: 42.3313, lng: -71.0956},
+    title: "Roxbury Crossing",
+    icon: orange_image
+  });
+  RoxburyCrossing.setMap(map);
+
+  var JacksonSquare = new google.maps.Marker({
+    position: {lat: 42.3229, lng: -71.1},
+    title: "JacksonSquare",
+    icon: orange_image
+  });
+  JacksonSquare.setMap(map);
+
+  var StonyBrook = new google.maps.Marker({
+    position: {lat: 42.3172, lng: -71.1043},
+    title: "Stony Brook",
+    icon: orange_image
+  });
+  StonyBrook.setMap(map);
+
+  var GreenStreet = new google.maps.Marker({
+    position: {lat: 42.3102, lng: -71.1078},
+    title: "Green Street",
+    icon: orange_image
+  });
+  GreenStreet.setMap(map);
+
+  var ForestHills = new google.maps.Marker({
+    position: {lat: 42.300735, lng: -71.114065},
+    title: "Forest Hills",
+    icon: orange_image
+  });
+  ForestHills.setMap(map);
+  
+  var orange_coordinates = [OakGrove.position, MaldenCenter.position, Wellington.position, Assembly.position, SullivanSquare.position, CommunityCollege.position, North.position, Haymarket.position, State.position, DowntownCrossing.position, Chinatown.position, TuftsMed.position, MassAve.position, Ruggles.position, RoxburyCrossing.position, JacksonSquare.position, StonyBrook.position, GreenStreet.position, ForestHills.position]
+  var orange_line = new google.maps.Polyline ({
+    path: orange_coordinates,
+    geodesic: true,
+    strokeColor: "#FFA500"
+  });
+  orange_line.setMap(map);
 }
