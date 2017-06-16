@@ -9,14 +9,15 @@ function init() {
   map = new google.maps.Map(document.getElementById("final_map"), map_options);
   setRedLine();
   setOrangeLine();
+  setBlueLine();
 }
 
 function setRedLine() {
-  //define images needed
   var red_image = {url: "RedT.png", scaledSize: new google.maps.Size(23,34)};
   var red_orange_image = {url: "RedOrangeT.png",scaledSize: new google.maps.Size(23,34)};
 
-  //start defining and placing red line stations on Map
+  //Define and place Red Line stations on Map
+  //Also add listener where info window pops up when mousing over icon
   var SouthStation = new google.maps.Marker({position: map_center, title: "South Station", icon: red_image});
   SouthStation.setMap(map);
   SouthStation.addListener("mouseover", function() {infowindow.setContent(SouthStation.title); infowindow.open(map, SouthStation);});
@@ -88,6 +89,7 @@ function setRedLine() {
   Charles.addListener("mouseover", function() {infowindow.setContent(Charles.title); infowindow.open(map, Charles);});
   Charles.addListener("mouseout", function() {infowindow.close();});
 
+  //Global variable because station is on both Red and Orange Lines.
   DowntownCrossing = new google.maps.Marker ( {position: {lat: 42.355518, lng: -71.060225}, title: "Downtown Crossing", icon: red_orange_image});
   DowntownCrossing.setMap(map);
   DowntownCrossing.addListener("mouseover", function() {infowindow.setContent(DowntownCrossing.title); infowindow.open(map, DowntownCrossing);});
@@ -128,30 +130,29 @@ function setRedLine() {
   Braintree.addListener("mouseover", function() {infowindow.setContent(Braintree.title); infowindow.open(map, Braintree);});
   Braintree.addListener("mouseout", function() {infowindow.close();});
   
-  //creating and placing redline polylines
-  var before_branch_coordinates = [Alewife.position, Davis.position, Porter.position, Harvard.position, Central.position, Kendall.position, Charles.position, Park.position, DowntownCrossing.position, SouthStation.position, Broadway.position, Andrew.position, JFK.position]
+  //Create and place Red Line polylines
+  var BeforeBranchCoordinates = [Alewife.position, Davis.position, Porter.position, Harvard.position, Central.position, Kendall.position, Charles.position, Park.position, DowntownCrossing.position, SouthStation.position, Broadway.position, Andrew.position, JFK.position]
   
-  var before_branch = new google.maps.Polyline ({path: before_branch_coordinates, geodesic: true, strokeColor: "#FF0000"});
-  before_branch.setMap(map);
+  var BeforeBranch = new google.maps.Polyline ({path: BeforeBranchCoordinates, geodesic: true, strokeColor: "#FF0000"});
+  BeforeBranch.setMap(map);
 
-  var quincy_start_coordinates = [JFK.position, NorthQuincy.position, Wollaston.position, QuincyCenter.position, QuincyAdams.position, Braintree.position]
+  var QuincyStartCoordinates = [JFK.position, NorthQuincy.position, Wollaston.position, QuincyCenter.position, QuincyAdams.position, Braintree.position]
 
-  var quincy_start = new google.maps.Polyline ({path: quincy_start_coordinates, geodesic: true, strokeColor: "#FF0000"});
-  quincy_start.setMap(map);
+  var QuincyStart = new google.maps.Polyline ({path: QuincyStartCoordinates, geodesic: true, strokeColor: "#FF0000"});
+  QuincyStart.setMap(map);
 
-  var savin_start_coordinates = [JFK.position, SavinHill.position, FieldsCorner.position, Shawmut.position, Ashmont.position]
+  var SavinStartCoordinates = [JFK.position, SavinHill.position, FieldsCorner.position, Shawmut.position, Ashmont.position]
 
-  var savin_start = new google.maps.Polyline ({path: savin_start_coordinates, geodesic: true, strokeColor: "#FF0000"});
-  savin_start.setMap(map);
+  var SavinStart = new google.maps.Polyline ({path: SavinStartCoordinates, geodesic: true, strokeColor: "#FF0000"});
+  SavinStart.setMap(map);
 }
 
 function setOrangeLine() {
-  var orange_image = {
-    url: "OrangeT.png",
-    scaledSize: new google.maps.Size(23,34)
-  };
+  var orange_image = {url: "OrangeT.png", scaledSize: new google.maps.Size(23,34)};
+  var orange_blue_image = {url: "OrangeBlueT.png", scaledSize: new google.maps.Size(23,34)};
 
-  //start defining and placing orange line stations on Map
+  //Define and place Orange Line stations on Map
+  //Also add listener where info window pops up when mousing over icon
   var OakGrove = new google.maps.Marker({position: {lat: 42.436942, lng: -71.070889}, title: "Oak Grove", icon: orange_image});
   OakGrove.setMap(map);
   OakGrove.addListener("mouseover", function() {infowindow.setContent(OakGrove.title); infowindow.open(map, OakGrove);});
@@ -192,7 +193,8 @@ function setOrangeLine() {
   Haymarket.addListener("mouseover", function() {infowindow.setContent(Haymarket.title); infowindow.open(map, Haymarket);});
   Haymarket.addListener("mouseout", function() {infowindow.close();});
 
-  var State = new google.maps.Marker({position: {lat: 42.3587, lng: -71.0578}, title: "State", icon: orange_image});
+  //Global variable because station is on both Blue and Orange Lines.
+  State = new google.maps.Marker({position: {lat: 42.3587, lng: -71.0578}, title: "State", icon: orange_blue_image});
   State.setMap(map);
   State.addListener("mouseover", function() {infowindow.setContent(State.title); infowindow.open(map, State);});
   State.addListener("mouseout", function() {infowindow.close();});
@@ -247,8 +249,75 @@ function setOrangeLine() {
   ForestHills.addListener("mouseover", function() {infowindow.setContent(ForestHills.title); infowindow.open(map, ForestHills);});
   ForestHills.addListener("mouseout", function() {infowindow.close();});
   
-  var orange_coordinates = [OakGrove.position, MaldenCenter.position, Wellington.position, Assembly.position, Sullivan.position, CommunityCollege.position, North.position, Haymarket.position, State.position, DowntownCrossing.position, Chinatown.position, TuftsMed.position, BackBay.position, MassAve.position, Ruggles.position, RoxburyCrossing.position, Jackson.position, StonyBrook.position, GreenStreet.position, ForestHills.position]
-  
-  var orange_line = new google.maps.Polyline ({path: orange_coordinates, geodesic: true, strokeColor: "#FFA500"});
-  orange_line.setMap(map);
+  //Create and place Orange Line polyline
+  var OrangeCoordinates = [OakGrove.position, MaldenCenter.position, Wellington.position, Assembly.position, Sullivan.position, CommunityCollege.position, North.position, Haymarket.position, State.position, DowntownCrossing.position, Chinatown.position, TuftsMed.position, BackBay.position, MassAve.position, Ruggles.position, RoxburyCrossing.position, Jackson.position, StonyBrook.position, GreenStreet.position, ForestHills.position]
+  var OrangeLine = new google.maps.Polyline ({path: OrangeCoordinates, geodesic: true, strokeColor: "#FFA500"});
+  OrangeLine.setMap(map);
 }
+
+function setBlueLine() {
+  var blue_image = {url: "BlueT.png", scaledSize: new google.maps.Size(23,34)};
+
+  //Define and place Blue Line stations on Map
+  //Also add listener where info window pops up when mousing over icon
+  var Wonderland = new google.maps.Marker ( {position: {lat: 42.4135, lng: -70.9918}, title: "Wonderland", icon: blue_image});
+  Wonderland.setMap(map);
+  Wonderland.addListener("mouseover", function() {infowindow.setContent(Wonderland.title); infowindow.open(map, Wonderland);});
+  Wonderland.addListener("mouseout", function() {infowindow.close();});
+
+  var RevereBeach = new google.maps.Marker ( {position: {lat: 42.4078, lng: -70.9926}, title: "Revere Beach", icon: blue_image});
+  RevereBeach.setMap(map);
+  RevereBeach.addListener("mouseover", function() {infowindow.setContent(RevereBeach.title); infowindow.open(map, RevereBeach);});
+  RevereBeach.addListener("mouseout", function() {infowindow.close();});
+
+  var Beachmont = new google.maps.Marker ( {position: {lat: 42.3975, lng: -70.9922}, title: "Beachmont", icon: blue_image});
+  Beachmont.setMap(map);
+  Beachmont.addListener("mouseover", function() {infowindow.setContent(Beachmont.title); infowindow.open(map, Beachmont);});
+  Beachmont.addListener("mouseout", function() {infowindow.close();});
+
+  var SuffolkDowns = new google.maps.Marker ( {position: {lat: 42.3904, lng: -70.997}, title: "Suffolk Downs", icon: blue_image});
+  SuffolkDowns.setMap(map);
+  SuffolkDowns.addListener("mouseover", function() {infowindow.setContent(SuffolkDowns.title); infowindow.open(map, SuffolkDowns);});
+  SuffolkDowns.addListener("mouseout", function() {infowindow.close();});
+
+  var OrientHeights = new google.maps.Marker ( {position: {lat: 42.3871, lng: -71.0042}, title: "Orient Heights", icon: blue_image});
+  OrientHeights.setMap(map);
+  OrientHeights.addListener("mouseover", function() {infowindow.setContent(OrientHeights.title); infowindow.open(map, OrientHeights);});
+  OrientHeights.addListener("mouseout", function() {infowindow.close();});
+
+  var WoodIsland = new google.maps.Marker ( {position: {lat: 42.3797, lng: -71.023}, title: "Wood Island", icon: blue_image});
+  WoodIsland.setMap(map);
+  WoodIsland.addListener("mouseover", function() {infowindow.setContent(WoodIsland.title); infowindow.open(map, WoodIsland);});
+  WoodIsland.addListener("mouseout", function() {infowindow.close();});
+
+  var Airport = new google.maps.Marker ( {position: {lat: 42.374374, lng: -71.030243}, title: "Airport", icon: blue_image});
+  Airport.setMap(map);
+  Airport.addListener("mouseover", function() {infowindow.setContent(Airport.title); infowindow.open(map, Airport);});
+  Airport.addListener("mouseout", function() {infowindow.close();});
+
+  var Maverick = new google.maps.Marker ( {position: {lat: 42.3691, lng: -71.0395}, title: "Maverick", icon: blue_image});
+  Maverick.setMap(map);
+  Maverick.addListener("mouseover", function() {infowindow.setContent(Maverick.title); infowindow.open(map, Maverick);});
+  Maverick.addListener("mouseout", function() {infowindow.close();});
+
+  var Aquarium = new google.maps.Marker ( {position: {lat: 42.3593, lng: -71.0531}, title: "Aquarium", icon: blue_image});
+  Aquarium.setMap(map);
+  Aquarium.addListener("mouseover", function() {infowindow.setContent(Aquarium.title); infowindow.open(map, Aquarium);});
+  Aquarium.addListener("mouseout", function() {infowindow.close();});
+
+  var GovernmentCenter = new google.maps.Marker ( {position: {lat: 42.359444, lng: -71.059444}, title: "Government Center", icon: blue_image});
+  GovernmentCenter.setMap(map);
+  GovernmentCenter.addListener("mouseover", function() {infowindow.setContent(GovernmentCenter.title); infowindow.open(map, GovernmentCenter);});
+  GovernmentCenter.addListener("mouseout", function() {infowindow.close();});
+
+  var Bowdoin = new google.maps.Marker ( {position: {lat: 42.3614, lng: -71.0622}, title: "Bowdoin", icon: blue_image});
+  Bowdoin.setMap(map);
+  Bowdoin.addListener("mouseover", function() {infowindow.setContent(Bowdoin.title); infowindow.open(map, Bowdoin);});
+  Bowdoin.addListener("mouseout", function() {infowindow.close();});
+
+  //Create and place Blue Line polyline
+  var BlueCoordinates = [Wonderland.position, RevereBeach.position, Beachmont.position, SuffolkDowns.position, OrientHeights.position, WoodIsland.position, Airport.position, Maverick.position, Aquarium.position, State.position, GovernmentCenter.position, Bowdoin.position]; 
+  var BlueLine = new google.maps.Polyline ({path: BlueCoordinates, geodesic: true, strokeColor: "#0000FF"});
+  BlueLine.setMap(map);
+}
+
