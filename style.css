@@ -1,0 +1,8 @@
+head, body {
+  color: "#00008B";
+  font-family: "Verdana";
+}
+
+.messages {
+  color: green;
+}
