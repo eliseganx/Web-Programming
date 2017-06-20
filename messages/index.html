@@ -10,7 +10,6 @@
       jsonData = '[{"id":1,"content":"Do you really want to hurt me?","username":"Boy"},{"id":2,"content":"Do you really want to make me cry?","username":"George"}]';
       var parsedData = JSON.parse(jsonData);
       var output = "";
-      output.innerHTML = "<p>Test 1</p>";
       for (i in parsedData) {  
         output += parsedData[i].content  + " - " + parsedData[i].username + "<br>";      
       }
