@@ -1,8 +1,9 @@
-head, body {
-  color: "#00008B";
-  font-family: "Verdana";
+html {
+	color: #00008B;
+	font-family: "Verdana";
 }
 
-.messages {
-  color: green;
+#messages {
+	font-family: "Verdana";
+	color: #006400;
 }
