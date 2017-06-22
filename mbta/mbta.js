@@ -141,21 +141,23 @@ function parseRedLinedata() {
     request.onreadystatechange = function() {
       if (request.readyState == 4 && request.status == 200) {
         var parseddata = JSON.parse(request.responseText);
-        var closesttrain = 100000;
-        var tester;
+        var upcomingtrains;
+        var destinations;
+        var toprint;
+        console.log("2");
         for (i in parseddata.TripList.Trips) {
           for (j in parseddata.TripList.Trips[i].Predictions)
             if (parseddata.TripList.Trips[i].Predictions[j].Stop == "Alewife") {
-              tester = parseddata.TripList.Trips[i].Predictions[j].Seconds;
-            if (tester < closesttrain) {
-              closesttrain = tester;
-            }
+              var time = parseddata.TripList.Trips[i].Predictions[j].Seconds
+              time = time / 60;
+              upcomingtrains.push(time);
+              destinations.push(parseddata.TripList.Trips[i].Destination);
           }
         }
-        console.log("TEST 2");
-        closesttrain = closesttrain / 60;
-        infowindow.setContent("<center> Closest train is" + closesttrain + "minutes away </center>");
-        console.log(closesttrain);
+        for (i in upcomingtrains) {
+          toprint = "Destination:" + destinations[i] + "Minutes away:" + upcomingtrains[i];
+        }
+        infowindow.setContent("<center>" + toprint + " </center>");
         infowindow.open(map, Alewife);
       }
       request.open("GET", jsondata, true);
