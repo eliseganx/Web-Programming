@@ -1,8 +1,8 @@
 function init() {
-  map_center = {lat: 42.877742, lng: -97.380979}; //{lat: 42.352271, lng: -71.05524200000001};
+  map_center = {lat: 42.352271, lng: -71.05524200000001}; // for center of USA - {lat: 42.877742, lng: -97.380979};
   infowindow = new google.maps.InfoWindow();
   map_options = {
-    zoom: 4, //11,
+    zoom: 11,
     center: map_center,
     mapTypeId: 'roadmap'
   };
@@ -11,19 +11,27 @@ function init() {
 
 //set up geolocation
   var mypng = {url: "youarehere.png", scaledSize: new google.maps.Size(23,34)};
-  mypos = new google.maps.LatLng;
 
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(function(position) {
-      mypos = {lat: position.coords.latitude, lng: position.coords.longitude};
-      var mymarker = new google.maps.Marker({position: mypos, title: "You Are Here", icon: mypng});
+      var mylat = position.coords.latitude;
+      var mylng = position.coords.longitude;
+      var coord = new google.maps.LatLng(mylat, mylng);
+      var mymarker = new google.maps.Marker({
+        position: coord,
+        map: map,
+        title: "You Are Here",
+        icon: mypng
+      });
       mymarker.setMap(map);
+      ClosestStationToMePolyline(mymarker);
     });
   }
+  
   else {
     alert("Geolocation is not supported by your web browser.");
   }
-  ClosestStationToMePolyline(mypos);
+  
 }
 
 function setRedLine() {
@@ -100,7 +108,7 @@ function setRedLine() {
   Braintree.setMap(map);
   
   AddRedPolylines();
-  ShowClosestRedLineStation();
+  parseRedLinedata();
 }
 
 function AddRedPolylines() {
@@ -121,358 +129,107 @@ function AddRedPolylines() {
   SavinStart.setMap(map);
 }
 
-function ShowClosestRedLineStation() {
-  
-  Alewife.addListener("mouseover", function() {infowindow.setContent("<center>" + Alewife.title + "</br> Click for more info" + "</center>"); infowindow.open(map, Alewife);});
-  Alewife.addListener("click", function() {
-    var distmeter = google.maps.geometry.spherical.computeDistanceBetween(Alewife.position, Davis.position);
-    var distmile = distmeter * 0.000621371192;
-    infowindow.setContent("<center> Closest MBTA Red Line Station: " + Davis.title + "</br> Miles away: " + distmile + "</center>"); 
+function parseRedLinedata() {
+  var jsondata = "https://defense-in-derpth.herokuapp.com/redline.json";
+
+  Alewife.addListener("mouseover", function() {
+    infowindow.setContent("<center>" + Alewife.title + "</br> Click for more info" + "</center>"); 
     infowindow.open(map, Alewife);
+  });
+  Alewife.addListener("click", function() {
+    var request = new XMLHttpRequest();
+    request.onreadystatechange = function() {
+      if (request.readyState == 4 && request.status == 200) {
+        var parseddata = JSON.parse(request.responseText);
+        var closesttrain = 100000;
+        var tester;
+        for (i in parseddata.TripList.Trips) {
+          for (j in parseddata.TripList.Trips[i].Predictions)
+            if (parseddata.TripList.Trips[i].Predictions[j].Stop == "Alewife") {
+              tester = parseddata.TripList.Trips[i].Predictions[j].Seconds;
+            if (tester < closesttrain) {
+              closesttrain = tester;
+            }
+          }
+        }
+        console.log("TEST 2");
+        closesttrain = closesttrain / 60;
+        infowindow.setContent("<center> Closest train is" + closesttrain + "minutes away </center>");
+        console.log(closesttrain);
+        infowindow.open(map, Alewife);
+      }
+      request.open("GET", jsondata, true);
+      request.send();
+    };
   });
 
   Davis.addListener("mouseover", function() {infowindow.setContent("<center>" + Davis.title + "</br> Click for more info" + "</center>"); infowindow.open(map, Davis);});
-  Davis.addListener("click", function() {
-    var dist1 = google.maps.geometry.spherical.computeDistanceBetween(Alewife.position, Davis.position);
-    var dist2 = google.maps.geometry.spherical.computeDistanceBetween(Davis.position, Porter.position);
-    if (dist1 < dist2) {
-      var distmeter = dist1 * 0.000621371192;
-      infowindow.setContent("<center> Closest MBTA Red Line Station: " + Alewife.title + "</br> Miles away: " + distmeter + "</center>"); 
-      infowindow.open(map, Davis);
-    }
-    else if (dist2 < dist1) {
-      var distmeter = dist2 * 0.000621371192;
-      infowindow.setContent("<center> Closest MBTA Red Line Station: " + Porter.title + "</br> Miles away: " + distmeter + "</center>"); 
-      infowindow.open(map, Davis);
-    }
-  });
-
+  
   Porter.addListener("mouseover", function() {infowindow.setContent("<center>" + Porter.title + "</br> Click for more info" + "</center>"); infowindow.open(map, Porter);});
-  Porter.addListener("click", function() {
-    var dist1 = google.maps.geometry.spherical.computeDistanceBetween(Porter.position, Harvard.position);
-    var dist2 = google.maps.geometry.spherical.computeDistanceBetween(Davis.position, Porter.position);
-    if (dist1 < dist2) {
-      var distmeter = dist1 * 0.000621371192;
-      infowindow.setContent("<center> Closest MBTA Red Line Station: " + Harvard.title + "</br> Miles away: " + distmeter + "</center>"); 
-      infowindow.open(map, Porter);
-    }
-    else if (dist2 < dist1) {
-      var distmeter = dist2 * 0.000621371192;
-      infowindow.setContent("<center> Closest MBTA Red Line Station: " + Davis.title + "</br> Miles away: " + distmeter + "</center>"); 
-      infowindow.open(map, Porter);
-    }
-  });
 
   Harvard.addListener("mouseover", function() {infowindow.setContent("<center>" + Harvard.title + "</br> Click for more info" + "</center>"); infowindow.open(map, Harvard);});
-  Harvard.addListener("click", function() {
-    var dist1 = google.maps.geometry.spherical.computeDistanceBetween(Porter.position, Harvard.position);
-    var dist2 = google.maps.geometry.spherical.computeDistanceBetween(Harvard.position, Central.position);
-    if (dist1 < dist2) {
-      var distmeter = dist1 * 0.000621371192;
-      infowindow.setContent("<center> Closest MBTA Red Line Station: " + Porter.title + "</br> Miles away: " + distmeter + "</center>"); 
-      infowindow.open(map, Harvard);
-    }
-    else if (dist2 < dist1) {
-      var distmeter = dist2 * 0.000621371192;
-      infowindow.setContent("<center> Closest MBTA Red Line Station: " + Central.title + "</br> Miles away: " + distmeter + "</center>"); 
-      infowindow.open(map, Harvard);
-    }
-  });
-
+  
   Central.addListener("mouseover", function() {infowindow.setContent("<center>" + Central.title + "</br> Click for more info" + "</center>"); infowindow.open(map, Central);});
-  Central.addListener("click", function() {
-    var dist1 = google.maps.geometry.spherical.computeDistanceBetween(Central.position, Harvard.position);
-    var dist2 = google.maps.geometry.spherical.computeDistanceBetween(Central.position, Kendall.position);
-    if (dist1 < dist2) {
-      var distmeter = dist1 * 0.000621371192;
-      infowindow.setContent("<center> Closest MBTA Red Line Station: " + Harvard.title + "</br> Miles away: " + distmeter + "</center>"); 
-      infowindow.open(map, Central);
-    }
-    else if (dist2 < dist1) {
-      var distmeter = dist2 * 0.000621371192;
-      infowindow.setContent("<center> Closest MBTA Red Line Station: " + Kendall.title + "</br> Miles away: " + distmeter + "</center>"); 
-      infowindow.open(map, Central);
-    }
-  });
-
+  
   Kendall.addListener("mouseover", function() {infowindow.setContent("<center>" + Kendall.title + "</br> Click for more info" + "</center>"); infowindow.open(map, Kendall);});
-  Kendall.addListener("click", function() {
-    var dist1 = google.maps.geometry.spherical.computeDistanceBetween(Kendall.position, Central.position);
-    var dist2 = google.maps.geometry.spherical.computeDistanceBetween(Kendall.position, Charles.position);
-    if (dist1 < dist2) {
-      var distmeter = dist1 * 0.000621371192;
-      infowindow.setContent("<center> Closest MBTA Red Line Station: " + Central.title + "</br> Miles away: " + distmeter + "</center>"); 
-      infowindow.open(map, Kendall);
-    }
-    else if (dist2 < dist1) {
-      var distmeter = dist2 * 0.000621371192;
-      infowindow.setContent("<center> Closest MBTA Red Line Station: " + Charles.title + "</br> Miles away: " + distmeter + "</center>"); 
-      infowindow.open(map, Kendall);
-    }
-  });
-
+  
   Charles.addListener("mouseover", function() {infowindow.setContent("<center>" + Charles.title + "</br> Click for more info" + "</center>"); infowindow.open(map, Charles);});
-  Charles.addListener("click", function() {
-    var dist1 = google.maps.geometry.spherical.computeDistanceBetween(Charles.position, Kendall.position);
-    var dist2 = google.maps.geometry.spherical.computeDistanceBetween(Charles.position, Park.position);
-    if (dist1 < dist2) {
-      var distmeter = dist1 * 0.000621371192;
-      infowindow.setContent("<center> Closest MBTA Red Line Station: " + Kendall.title + "</br> Miles away: " + distmeter + "</center>"); 
-      infowindow.open(map, Charles);
-    }
-    else if (dist2 < dist1) {
-      var distmeter = dist2 * 0.000621371192;
-      infowindow.setContent("<center> Closest MBTA Red Line Station: " + Park.title + "</br> Miles away: " + distmeter + "</center>"); 
-      infowindow.open(map, Charles);
-    }
-  });
 
   Park.addListener("mouseover", function() {infowindow.setContent("<center>" + Park.title + "</br> Click for more info" + "</center>"); infowindow.open(map, Park);});
-  Park.addListener("click", function() {
-    var dist1 = google.maps.geometry.spherical.computeDistanceBetween(Park.position, Charles.position);
-    var dist2 = google.maps.geometry.spherical.computeDistanceBetween(Park.position, DowntownCrossing.position);
-    if (dist1 < dist2) {
-      var distmeter = dist1 * 0.000621371192;
-      infowindow.setContent("<center> Closest MBTA Red Line Station: " + Charles.title + "</br> Miles away: " + distmeter + "</center>"); 
-      infowindow.open(map, Park);
-    }
-    else if (dist2 < dist1) {
-      var distmeter = dist2 * 0.000621371192;
-      infowindow.setContent("<center> Closest MBTA Red Line Station: " + DowntownCrossing.title + "</br> Miles away: " + distmeter + "</center>"); 
-      infowindow.open(map, Park);
-    }
-  });
-
+  
   DowntownCrossing.addListener("mouseover", function() {infowindow.setContent("<center>" + DowntownCrossing.title + "</br> Click for more info" + "</center>"); infowindow.open(map, DowntownCrossing);});
-  DowntownCrossing.addListener("click", function() {
-    var dist1 = google.maps.geometry.spherical.computeDistanceBetween(DowntownCrossing.position, Park.position);
-    var dist2 = google.maps.geometry.spherical.computeDistanceBetween(DowntownCrossing.position, SouthStation.position);
-    if (dist1 < dist2) {
-      var distmeter = dist1 * 0.000621371192;
-      infowindow.setContent("<center> Closest MBTA Red Line Station: " + Park.title + "</br> Miles away: " + distmeter + "</center>"); 
-      infowindow.open(map, DowntownCrossing);
-    }
-    else if (dist2 < dist1) {
-      var distmeter = dist2 * 0.000621371192;
-      infowindow.setContent("<center> Closest MBTA Red Line Station: " + SouthStation.title + "</br> Miles away: " + distmeter + "</center>"); 
-      infowindow.open(map, DowntownCrossing);
-    }
-  });
-
+  
   SouthStation.addListener("mouseover", function() {infowindow.setContent("<center>" + SouthStation.title + "</br> Click for more info" + "</center>"); infowindow.open(map, SouthStation);});
-  SouthStation.addListener("click", function() {
-    var dist1 = google.maps.geometry.spherical.computeDistanceBetween(SouthStation.position, DowntownCrossing.position);
-    var dist2 = google.maps.geometry.spherical.computeDistanceBetween(SouthStation.position, Broadway.position);
-    if (dist1 < dist2) {
-      var distmeter = dist1 * 0.000621371192;
-      infowindow.setContent("<center> Closest MBTA Red Line Station: " + DowntownCrossing.title + "</br> Miles away: " + distmeter + "</center>"); 
-      infowindow.open(map, SouthStation);
-    }
-    else if (dist2 < dist1) {
-      var distmeter = dist2 * 0.000621371192;
-      infowindow.setContent("<center> Closest MBTA Red Line Station: " + Broadway.title + "</br> Miles away: " + distmeter + "</center>"); 
-      infowindow.open(map, SouthStation);
-    }
-  });
-
+  
   Broadway.addListener("mouseover", function() {infowindow.setContent("<center>" + Broadway.title + "</br> Click for more info" + "</center>"); infowindow.open(map, Broadway);});
-  Broadway.addListener("click", function() {
-    var dist1 = google.maps.geometry.spherical.computeDistanceBetween(Broadway.position, SouthStation.position);
-    var dist2 = google.maps.geometry.spherical.computeDistanceBetween(Broadway.position, Andrew.position);
-    if (dist1 < dist2) {
-      var distmeter = dist1 * 0.000621371192;
-      infowindow.setContent("<center> Closest MBTA Red Line Station: " + SouthStation.title + "</br> Miles away: " + distmeter + "</center>"); 
-      infowindow.open(map, Broadway);
-    }
-    else if (dist2 < dist1) {
-      var distmeter = dist2 * 0.000621371192;
-      infowindow.setContent("<center> Closest MBTA Red Line Station: " + Andrew.title + "</br> Miles away: " + distmeter + "</center>"); 
-      infowindow.open(map, Broadway);
-    }
-  });
-
+ 
   Andrew.addListener("mouseover", function() {infowindow.setContent("<center>" + Andrew.title + "</br> Click for more info" + "</center>"); infowindow.open(map, Andrew);});
-  Andrew.addListener("click", function() {
-    var dist1 = google.maps.geometry.spherical.computeDistanceBetween(Andrew.position, Broadway.position);
-    var dist2 = google.maps.geometry.spherical.computeDistanceBetween(Andrew.position, JFK.position);
-    if (dist1 < dist2) {
-      var distmeter = dist1 * 0.000621371192;
-      infowindow.setContent("<center> Closest MBTA Red Line Station: " + Broadway.title + "</br> Miles away: " + distmeter + "</center>"); 
-      infowindow.open(map, Andrew);
-    }
-    else if (dist2 < dist1) {
-      var distmeter = dist2 * 0.000621371192;
-      infowindow.setContent("<center> Closest MBTA Red Line Station: " + JFK.title + "</br> Miles away: " + distmeter + "</center>"); 
-      infowindow.open(map, Andrew);
-    }
-  });
-
+  
   JFK.addListener("mouseover", function() {infowindow.setContent("<center>" + JFK.title + "</br> Click for more info" + "</center>"); infowindow.open(map, JFK);});
-  JFK.addListener("click", function() {
-    var dist1 = google.maps.geometry.spherical.computeDistanceBetween(JFK.position, Andrew.position);
-    var dist2 = google.maps.geometry.spherical.computeDistanceBetween(JFK.position, NorthQuincy.position);
-    var dist3 = google.maps.geometry.spherical.computeDistanceBetween(JFK.position, SavinHill.position);
-    if ((dist1 < dist2) && (dist1 < dist3)) {
-      var distmeter = dist1 * 0.000621371192;
-      infowindow.setContent("<center> Closest MBTA Red Line Station: " + Andrew.title + "</br> Miles away: " + distmeter + "</center>"); 
-      infowindow.open(map, JFK);
-    }
-    else if ((dist2 < dist1) && (dist2 < dist3)) {
-      var distmeter = dist2 * 0.000621371192;
-      infowindow.setContent("<center> Closest MBTA Red Line Station: " + NorthQuincy.title + "</br> Miles away: " + distmeter + "</center>"); 
-      infowindow.open(map, JFK);
-    }
-    else if ((dist3 < dist1) && (dist3 < dist2)) {
-      var distmeter = dist3 * 0.000621371192;
-      infowindow.setContent("<center> Closest MBTA Red Line Station: " + SavinHill.title + "</br> Miles away: " + distmeter + "</center>"); 
-      infowindow.open(map, JFK);
-    }
-  });
-
+ 
   SavinHill.addListener("mouseover", function() {infowindow.setContent("<center>" + SavinHill.title + "</br> Click for more info" + "</center>"); infowindow.open(map, SavinHill);});
-  SavinHill.addListener("click", function() {
-    var dist1 = google.maps.geometry.spherical.computeDistanceBetween(SavinHill.position, JFK.position);
-    var dist2 = google.maps.geometry.spherical.computeDistanceBetween(SavinHill.position, FieldsCorner.position);
-    if (dist1 < dist2) {
-      var distmeter = dist1 * 0.000621371192;
-      infowindow.setContent("<center> Closest MBTA Red Line Station: " + JFK.title + "</br> Miles away: " + distmeter + "</center>"); 
-      infowindow.open(map, SavinHill);
-    }
-    else if (dist2 < dist1) {
-      var distmeter = dist2 * 0.000621371192;
-      infowindow.setContent("<center> Closest MBTA Red Line Station: " + FieldsCorner.title + "</br> Miles away: " + distmeter + "</center>"); 
-      infowindow.open(map, SavinHill);
-    }
-  });
-
+ 
   FieldsCorner.addListener("mouseover", function() {infowindow.setContent("<center>" + FieldsCorner.title + "</br> Click for more info" + "</center>"); infowindow.open(map, FieldsCorner);});
-  FieldsCorner.addListener("click", function() {
-    var dist1 = google.maps.geometry.spherical.computeDistanceBetween(FieldsCorner.position, SavinHill.position);
-    var dist2 = google.maps.geometry.spherical.computeDistanceBetween(FieldsCorner.position, Shawmut.position);
-    if (dist1 < dist2) {
-      var distmeter = dist1 * 0.000621371192;
-      infowindow.setContent("<center> Closest MBTA Red Line Station: " + SavinHill.title + "</br> Miles away: " + distmeter + "</center>"); 
-      infowindow.open(map, FieldsCorner);
-    }
-    else if (dist2 < dist1) {
-      var distmeter = dist2 * 0.000621371192;
-      infowindow.setContent("<center> Closest MBTA Red Line Station: " + Shawmut.title + "</br> Miles away: " + distmeter + "</center>"); 
-      infowindow.open(map, FieldsCorner);
-    }
-  });
-
+ 
   Shawmut.addListener("mouseover", function() {infowindow.setContent("<center>" + Shawmut.title + "</br> Click for more info" + "</center>"); infowindow.open(map, Shawmut);});
-  Shawmut.addListener("click", function() {
-    var dist1 = google.maps.geometry.spherical.computeDistanceBetween(Shawmut.position, FieldsCorner.position);
-    var dist2 = google.maps.geometry.spherical.computeDistanceBetween(Shawmut.position, Ashmont.position);
-    if (dist1 < dist2) {
-      var distmeter = dist1 * 0.000621371192;
-      infowindow.setContent("<center> Closest MBTA Red Line Station: " + FieldsCorner.title + "</br> Miles away: " + distmeter + "</center>"); 
-      infowindow.open(map, Shawmut);
-    }
-    else if (dist2 < dist1) {
-      var distmeter = dist2 * 0.000621371192;
-      infowindow.setContent("<center> Closest MBTA Red Line Station: " + Ashmont.title + "</br> Miles away: " + distmeter + "</center>"); 
-      infowindow.open(map, Shawmut);
-    }
-  });
-
+ 
   Ashmont.addListener("mouseover", function() {infowindow.setContent("<center>" + Ashmont.title + "</br> Click for more info" + "</center>"); infowindow.open(map, Ashmont);});
-  Ashmont.addListener("click", function() {
-    var distmeter = google.maps.geometry.spherical.computeDistanceBetween(Ashmont.position, Shawmut.position);
-    var distmile = distmeter * 0.000621371192;
-    infowindow.setContent("<center> Closest MBTA Red Line Station: " + Shawmut.title + "</br> Miles away: " + distmile + "</center>"); 
-    infowindow.open(map, Ashmont);
-  });
 
   NorthQuincy.addListener("mouseover", function() {infowindow.setContent("<center>" + NorthQuincy.title + "</br> Click for more info" + "</center>"); infowindow.open(map, NorthQuincy);});
-  NorthQuincy.addListener("click", function() {
-    var dist1 = google.maps.geometry.spherical.computeDistanceBetween(NorthQuincy.position, JFK.position);
-    var dist2 = google.maps.geometry.spherical.computeDistanceBetween(NorthQuincy.position, Wollaston.position);
-    if (dist1 < dist2) {
-      var distmeter = dist1 * 0.000621371192;
-      infowindow.setContent("<center> Closest MBTA Red Line Station: " + JFK.title + "</br> Miles away: " + distmeter + "</center>"); 
-      infowindow.open(map, NorthQuincy);
-    }
-    else if (dist2 < dist1) {
-      var distmeter = dist2 * 0.000621371192;
-      infowindow.setContent("<center> Closest MBTA Red Line Station: " + Wollaston.title + "</br> Miles away: " + distmeter + "</center>"); 
-      infowindow.open(map, NorthQuincy);
-    }
-  });
-
+ 
   Wollaston.addListener("mouseover", function() {infowindow.setContent("<center>" + Wollaston.title + "</br> Click for more info" + "</center>"); infowindow.open(map, Wollaston);});
-  Wollaston.addListener("click", function() {
-    var dist1 = google.maps.geometry.spherical.computeDistanceBetween(Wollaston.position, NorthQuincy.position);
-    var dist2 = google.maps.geometry.spherical.computeDistanceBetween(Wollaston.position, QuincyCenter.position);
-    if (dist1 < dist2) {
-      var distmeter = dist1 * 0.000621371192;
-      infowindow.setContent("<center> Closest MBTA Red Line Station: " + NorthQuincy.title + "</br> Miles away: " + distmeter + "</center>"); 
-      infowindow.open(map, Wollaston);
-    }
-    else if (dist2 < dist1) {
-      var distmeter = dist2 * 0.000621371192;
-      infowindow.setContent("<center> Closest MBTA Red Line Station: " + QuincyCenter.title + "</br> Miles away: " + distmeter + "</center>"); 
-      infowindow.open(map, Wollaston);
-    }
-  });
-
+ 
   QuincyCenter.addListener("mouseover", function() {infowindow.setContent("<center>" + QuincyCenter.title + "</br> Click for more info" + "</center>"); infowindow.open(map, QuincyCenter);});
-  QuincyCenter.addListener("click", function() {
-    var dist1 = google.maps.geometry.spherical.computeDistanceBetween(QuincyCenter.position, Wollaston.position);
-    var dist2 = google.maps.geometry.spherical.computeDistanceBetween(QuincyCenter.position, QuincyAdams.position);
-    if (dist1 < dist2) {
-      var distmeter = dist1 * 0.000621371192;
-      infowindow.setContent("<center> Closest MBTA Red Line Station: " + Wollaston.title + "</br> Miles away: " + distmeter + "</center>"); 
-      infowindow.open(map, QuincyCenter);
-    }
-    else if (dist2 < dist1) {
-      var distmeter = dist2 * 0.000621371192;
-      infowindow.setContent("<center> Closest MBTA Red Line Station: " + QuincyAdams.title + "</br> Miles away: " + distmeter + "</center>"); 
-      infowindow.open(map, QuincyCenter);
-    }
-  });
-
+ 
   QuincyAdams.addListener("mouseover", function() {infowindow.setContent("<center>" + QuincyAdams.title + "</br> Click for more info" + "</center>"); infowindow.open(map, QuincyAdams);});
-  QuincyAdams.addListener("click", function() {
-    var dist1 = google.maps.geometry.spherical.computeDistanceBetween(QuincyAdams.position, QuincyCenter.position);
-    var dist2 = google.maps.geometry.spherical.computeDistanceBetween(QuincyAdams.position, Braintree.position);
-    if (dist1 < dist2) {
-      var distmeter = dist1 * 0.000621371192;
-      infowindow.setContent("<center> Closest MBTA Red Line Station: " + QuincyCenter.title + "</br> Miles away: " + distmeter + "</center>"); 
-      infowindow.open(map, QuincyAdams);
-    }
-    else if (dist2 < dist1) {
-      var distmeter = dist2 * 0.000621371192;
-      infowindow.setContent("<center> Closest MBTA Red Line Station: " + Braintree.title + "</br> Miles away: " + distmeter + "</center>"); 
-      infowindow.open(map, QuincyAdams);
-    }
-  });
-
+  
   Braintree.addListener("mouseover", function() {infowindow.setContent("<center>" + Braintree.title + "</br> Click for more info" + "</center>"); infowindow.open(map, Braintree);});
-  Braintree.addListener("click", function() {
-    var distmeter = google.maps.geometry.spherical.computeDistanceBetween(Braintree.position, QuincyAdams.position);
-    var distmile = distmeter * 0.000621371192;
-    infowindow.setContent("<center> Closest MBTA Red Line Station: " + QuincyAdams.title + "</br> Miles away: " + distmile + "</center>"); 
-    infowindow.open(map, Braintree);
-  });
-
-
 }
 
-function ClosestStationToMePolyline(myposition)  {
-  var allstations = [Alewife.position, Davis.position, Porter.position, Harvard.position, Central.position, Kendall.position, Charles.position, Park.position, DowntownCrossing.position, SouthStation.position, Broadway.position, Andrew.position, JFK.position, NorthQuincy.position, Wollaston.position, QuincyCenter.position, QuincyAdams.position, Braintree.position, SavinHill.position, FieldsCorner.position, Shawmut.position, Ashmont.position];
+function ClosestStationToMePolyline(mymarker)  {
+  var allstations = [Alewife, Davis, Porter, Harvard, Central, Kendall, Charles, Park, DowntownCrossing, SouthStation, Broadway, Andrew, JFK, NorthQuincy, Wollaston, QuincyCenter, QuincyAdams, Braintree, SavinHill, FieldsCorner, Shawmut, Ashmont];
   var shortestdist = 1000000000; 
+  var closeststation;
   for (var i = 0; i < allstations.length; i++) {
-    var teststation = allstations[i];
-    var testdist = google.maps.geometry.spherical.computeDistanceBetween(myposition, teststation);
+    var teststation = allstations[i].title;
+    var teststationpos = allstations[i].position;
+    var testdist = google.maps.geometry.spherical.computeDistanceBetween(mymarker.position, teststationpos);
     if (testdist < shortestdist) {
       shortestdist = testdist;
+      closeststation = teststation;
+      closeststationpos = teststationpos;
     } 
   }
-  var coordinates = [myposition, shortestdist];
+  var coordinates = [mymarker.position, closeststationpos];
   var polyline = new google.maps.Polyline ({path: coordinates, geodesic: true, strokeColor: "#000000"});
   polyline.setMap(map);
+
+  shortestdistmiles = shortestdist * 0.000621371192;
+  mymarker.addListener("mouseover", function() {infowindow.setContent("<center>" + mymarker.title + "</br> Click for more info" + "</center>"); infowindow.open(map, mymarker);});
+  mymarker.addListener("click", function() {
+    infowindow.setContent("<center> Closest MBTA Red Line Station: " + closeststation + "</br> Miles away: " + shortestdistmiles + "</center>"); 
+    infowindow.open(map, mymarker);
+  });
 }
 
   
