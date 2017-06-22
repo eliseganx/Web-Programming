@@ -140,37 +140,201 @@ function parseRedLinedata() {
     var request = new XMLHttpRequest();
     request.onreadystatechange = function() {
       if (request.readyState == 4 && request.status == 200) {
-        var parseddata = JSON.parse(request.responseText);
-        var upcomingtrains;
-        var destinations;
-        var toprint;
-        console.log("2");
-        for (i in parseddata.TripList.Trips) {
-          for (j in parseddata.TripList.Trips[i].Predictions)
-            if (parseddata.TripList.Trips[i].Predictions[j].Stop == "Alewife") {
-              var time = parseddata.TripList.Trips[i].Predictions[j].Seconds
-              time = time / 60;
-              upcomingtrains.push(time);
-              destinations.push(parseddata.TripList.Trips[i].Destination);
+        var tripdata = JSON.parse(request.responseText);
+        var traintoAle = new Array();
+        var traintoAsh = new Array();
+        var traintoBrain = new Array();
+        var printAle, printAsh, printBrain;
+        for (var i in tripdata.TripList.Trips) {
+          for (var j in tripdata.TripList.Trips[i].Predictions)
+            if (tripdata.TripList.Trips[i].Predictions[j].Stop == "Alewife") {
+                if (tripdata.TripList.Trips[i].Destination == "Alewife") {
+                  var addthis = tripdata.TripList.Trips[i].Predictions[j].Seconds
+                  traintoAle.push(addthis);
+                }
+                else if (tripdata.TripList.Trips[i].Destination == "Ashmont") {
+                  var addthis = tripdata.TripList.Trips[i].Predictions[j].Seconds
+                  traintoAsh.push(addthis);
+                }
+                else if (tripdata.TripList.Trips[i].Destination == "Braintree") {
+                  var addthis = tripdata.TripList.Trips[i].Predictions[j].Seconds
+                  traintoBrain.push(addthis);
+                }
           }
+        traintoAle = traintoAle.sort(function(a, b){return a > b});
+        traintoAsh = traintoAsh.sort(function(a, b){return a > b});
+        traintoBrain = traintoBrain.sort(function(a, b){return a > b});
         }
-        for (i in upcomingtrains) {
-          toprint = "Destination:" + destinations[i] + "Minutes away:" + upcomingtrains[i];
+        for (var i in traintoAle) {
+          var timesec = traintoAle[i]/60;
+          printAle = printAle + "Destination: Alewife " + "Minutes until arrival: " + timesec + "</br>";
         }
-        infowindow.setContent("<center>" + toprint + " </center>");
+        for (var i in traintoAsh) {
+          var timesec = traintoAsh[i]/60;
+          printAsh = printAsh + "Destination: Ashmont " + "Minutes until arrival: " + timesec + "</br>";
+        }
+        for (var i in traintoBrain) {
+          var timesec = traintoBrain[i]/60;
+          printBrain = printBrain + "Destination: Braintree " + "Minutes until arrival: " + timesec + "</br>";
+        }
+        infowindow.setContent("<center>" + printAle + printAsh + printBrain + " </center>");
         infowindow.open(map, Alewife);
       }
-      request.open("GET", jsondata, true);
-      request.send();
     };
+    request.open("GET", jsondata, true);
+    request.send();
   });
 
   Davis.addListener("mouseover", function() {infowindow.setContent("<center>" + Davis.title + "</br> Click for more info" + "</center>"); infowindow.open(map, Davis);});
-  
+  Davis.addListener("click", function() {
+    var request = new XMLHttpRequest();
+    request.onreadystatechange = function() {
+      if (request.readyState == 4 && request.status == 200) {
+        var tripdata = JSON.parse(request.responseText);
+        var traintoAle = new Array();
+        var traintoAsh = new Array();
+        var traintoBrain = new Array();
+        var printAle, printAsh, printBrain;
+        for (var i in tripdata.TripList.Trips) {
+          for (var j in tripdata.TripList.Trips[i].Predictions)
+            if (tripdata.TripList.Trips[i].Predictions[j].Stop == "Davis") {
+                if (tripdata.TripList.Trips[i].Destination == "Alewife") {
+                  var addthis = tripdata.TripList.Trips[i].Predictions[j].Seconds
+                  traintoAle.push(addthis);
+                }
+                else if (tripdata.TripList.Trips[i].Destination == "Ashmont") {
+                  var addthis = tripdata.TripList.Trips[i].Predictions[j].Seconds
+                  traintoAsh.push(addthis);
+                }
+                else if (tripdata.TripList.Trips[i].Destination == "Braintree") {
+                  var addthis = tripdata.TripList.Trips[i].Predictions[j].Seconds
+                  traintoBrain.push(addthis);
+                }
+          }
+        traintoAle = traintoAle.sort(function(a, b){return a > b});
+        traintoAsh = traintoAsh.sort(function(a, b){return a > b});
+        traintoBrain = traintoBrain.sort(function(a, b){return a > b});
+        }
+        for (var i in traintoAle) {
+          var timesec = traintoAle[i]/60;
+          printAle = printAle + "Destination: Alewife " + "Minutes until arrival: " + timesec + "</br>";
+        }
+        for (var i in traintoAsh) {
+          var timesec = traintoAsh[i]/60;
+          printAsh = printAsh + "Destination: Ashmont " + "Minutes until arrival: " + timesec + "</br>";
+        }
+        for (var i in traintoBrain) {
+          var timesec = traintoBrain[i]/60;
+          printBrain = printBrain + "Destination: Braintree " + "Minutes until arrival: " + timesec + "</br>";
+        }
+        infowindow.setContent("<center>" + printAle + printAsh + printBrain + " </center>");
+        infowindow.open(map, Davis);
+      }
+    };
+    request.open("GET", jsondata, true);
+    request.send();
+  });
+
   Porter.addListener("mouseover", function() {infowindow.setContent("<center>" + Porter.title + "</br> Click for more info" + "</center>"); infowindow.open(map, Porter);});
+  Porter.addListener("click", function() {
+    var request = new XMLHttpRequest();
+    request.onreadystatechange = function() {
+      if (request.readyState == 4 && request.status == 200) {
+        var tripdata = JSON.parse(request.responseText);
+        var traintoAle = new Array();
+        var traintoAsh = new Array();
+        var traintoBrain = new Array();
+        var printAle, printAsh, printBrain;
+        for (var i in tripdata.TripList.Trips) {
+          for (var j in tripdata.TripList.Trips[i].Predictions)
+            if (tripdata.TripList.Trips[i].Predictions[j].Stop == "Porter") {
+                if (tripdata.TripList.Trips[i].Destination == "Alewife") {
+                  var addthis = tripdata.TripList.Trips[i].Predictions[j].Seconds
+                  traintoAle.push(addthis);
+                }
+                else if (tripdata.TripList.Trips[i].Destination == "Ashmont") {
+                  var addthis = tripdata.TripList.Trips[i].Predictions[j].Seconds
+                  traintoAsh.push(addthis);
+                }
+                else if (tripdata.TripList.Trips[i].Destination == "Braintree") {
+                  var addthis = tripdata.TripList.Trips[i].Predictions[j].Seconds
+                  traintoBrain.push(addthis);
+                }
+          }
+        traintoAle = traintoAle.sort(function(a, b){return a > b});
+        traintoAsh = traintoAsh.sort(function(a, b){return a > b});
+        traintoBrain = traintoBrain.sort(function(a, b){return a > b});
+        }
+        for (var i in traintoAle) {
+          var timesec = traintoAle[i]/60;
+          printAle = printAle + "Destination: Alewife " + "Minutes until arrival: " + timesec + "</br>";
+        }
+        for (var i in traintoAsh) {
+          var timesec = traintoAsh[i]/60;
+          printAsh = printAsh + "Destination: Ashmont " + "Minutes until arrival: " + timesec + "</br>";
+        }
+        for (var i in traintoBrain) {
+          var timesec = traintoBrain[i]/60;
+          printBrain = printBrain + "Destination: Braintree " + "Minutes until arrival: " + timesec + "</br>";
+        }
+        infowindow.setContent("<center>" + printAle + printAsh + printBrain + " </center>");
+        infowindow.open(map, Porter);
+      }
+    };
+    request.open("GET", jsondata, true);
+    request.send();
+  });
 
   Harvard.addListener("mouseover", function() {infowindow.setContent("<center>" + Harvard.title + "</br> Click for more info" + "</center>"); infowindow.open(map, Harvard);});
-  
+  Harvard.addListener("click", function() {
+    var request = new XMLHttpRequest();
+    request.onreadystatechange = function() {
+      if (request.readyState == 4 && request.status == 200) {
+        var tripdata = JSON.parse(request.responseText);
+        var traintoAle = new Array();
+        var traintoAsh = new Array();
+        var traintoBrain = new Array();
+        var printAle, printAsh, printBrain;
+        for (var i in tripdata.TripList.Trips) {
+          for (var j in tripdata.TripList.Trips[i].Predictions)
+            if (tripdata.TripList.Trips[i].Predictions[j].Stop == "Harvard") {
+                if (tripdata.TripList.Trips[i].Destination == "Alewife") {
+                  var addthis = tripdata.TripList.Trips[i].Predictions[j].Seconds
+                  traintoAle.push(addthis);
+                }
+                else if (tripdata.TripList.Trips[i].Destination == "Ashmont") {
+                  var addthis = tripdata.TripList.Trips[i].Predictions[j].Seconds
+                  traintoAsh.push(addthis);
+                }
+                else if (tripdata.TripList.Trips[i].Destination == "Braintree") {
+                  var addthis = tripdata.TripList.Trips[i].Predictions[j].Seconds
+                  traintoBrain.push(addthis);
+                }
+          }
+        traintoAle = traintoAle.sort(function(a, b){return a > b});
+        traintoAsh = traintoAsh.sort(function(a, b){return a > b});
+        traintoBrain = traintoBrain.sort(function(a, b){return a > b});
+        }
+        for (var i in traintoAle) {
+          var timesec = traintoAle[i]/60;
+          printAle = printAle + "Destination: Alewife " + "Minutes until arrival: " + timesec + "</br>";
+        }
+        for (var i in traintoAsh) {
+          var timesec = traintoAsh[i]/60;
+          printAsh = printAsh + "Destination: Ashmont " + "Minutes until arrival: " + timesec + "</br>";
+        }
+        for (var i in traintoBrain) {
+          var timesec = traintoBrain[i]/60;
+          printBrain = printBrain + "Destination: Braintree " + "Minutes until arrival: " + timesec + "</br>";
+        }
+        infowindow.setContent("<center>" + printAle + printAsh + printBrain + " </center>");
+        infowindow.open(map, Harvard);
+      }
+    };
+    request.open("GET", jsondata, true);
+    request.send();
+  });
+
   Central.addListener("mouseover", function() {infowindow.setContent("<center>" + Central.title + "</br> Click for more info" + "</center>"); infowindow.open(map, Central);});
   
   Kendall.addListener("mouseover", function() {infowindow.setContent("<center>" + Kendall.title + "</br> Click for more info" + "</center>"); infowindow.open(map, Kendall);});
@@ -186,7 +350,66 @@ function parseRedLinedata() {
   Broadway.addListener("mouseover", function() {infowindow.setContent("<center>" + Broadway.title + "</br> Click for more info" + "</center>"); infowindow.open(map, Broadway);});
  
   Andrew.addListener("mouseover", function() {infowindow.setContent("<center>" + Andrew.title + "</br> Click for more info" + "</center>"); infowindow.open(map, Andrew);});
-  
+  Andrew.addListener("click", function() {
+    var request = new XMLHttpRequest();
+    request.onreadystatechange = function() {
+      if (request.readyState == 4 && request.status == 200) {
+        var tripdata = JSON.parse(request.responseText);
+        var traintoAle = new Array();
+        var traintoAsh = new Array();
+        var traintoBrain = new Array();
+        var printAle, printAsh, printBrain;
+        for (var i in tripdata.TripList.Trips) {
+          for (var j in tripdata.TripList.Trips[i].Predictions)
+            if (tripdata.TripList.Trips[i].Predictions[j].Stop == "Andrew") {
+                if (tripdata.TripList.Trips[i].Destination == "Alewife") {
+                  var addthis = tripdata.TripList.Trips[i].Predictions[j].Seconds
+                  traintoAle.push(addthis);
+                }
+                else if (tripdata.TripList.Trips[i].Destination == "Ashmont") {
+                  var addthis = tripdata.TripList.Trips[i].Predictions[j].Seconds
+                  traintoAsh.push(addthis);
+                }
+                else if (tripdata.TripList.Trips[i].Destination == "Braintree") {
+                  var addthis = tripdata.TripList.Trips[i].Predictions[j].Seconds
+                  traintoBrain.push(addthis);
+                }
+          }
+        traintoAle = traintoAle.sort(function(a, b){return a > b});
+        traintoAsh = traintoAsh.sort(function(a, b){return a > b});
+        traintoBrain = traintoBrain.sort(function(a, b){return a > b});
+        }
+          for (var i in traintoAle) {
+            var timesec = traintoAle[i]/60;
+            printAle = printAle + "Destination: Alewife " + "Minutes until arrival: " + timesec + "</br>";
+        } 
+        
+        for (var i in traintoAsh) {
+          var timesec = traintoAsh[i]/60;
+          printAsh = printAsh + "Destination: Ashmont " + "Minutes until arrival: " + timesec + "</br>";
+        }
+        for (var i in traintoBrain) {
+          var timesec = traintoBrain[i]/60;
+          printBrain = printBrain + "Destination: Braintree " + "Minutes until arrival: " + timesec + "</br>";
+        }
+        if ((printAle[0] == "") && (printAsh[0] == "") && (printBrain[0] == "")) {
+          infowindow.setContent("<center>" + "No more trains!"+ " </center>");
+        }
+        else if ((printAle[0] == "") && (printAsh[0] != "") && (printBrain[0] == "")) {
+          infowindow.setContent("<center>" + printAsh + "</center>");
+        }
+        else {
+          infowindow.setContent("<center>" + printAle + printAsh + printBrain + " </center>");
+        }
+        infowindow.open(map, Andrew);
+      }
+    };
+    request.open("GET", jsondata, true);
+    request.send();
+  });
+
+
+
   JFK.addListener("mouseover", function() {infowindow.setContent("<center>" + JFK.title + "</br> Click for more info" + "</center>"); infowindow.open(map, JFK);});
  
   SavinHill.addListener("mouseover", function() {infowindow.setContent("<center>" + SavinHill.title + "</br> Click for more info" + "</center>"); infowindow.open(map, SavinHill);});
@@ -233,5 +456,4 @@ function ClosestStationToMePolyline(mymarker)  {
     infowindow.open(map, mymarker);
   });
 }
-
   
