@@ -1,4 +1,4 @@
-README
+README - The messages folder has both Part 1 and Part 2 of the messages lab
 
 1. The program prints the data from the file data.json using XMLHttpRequest.
 
