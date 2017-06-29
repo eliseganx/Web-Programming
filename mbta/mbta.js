@@ -132,7 +132,7 @@ function AddRedPolylines() {
 }
 
 function parseRedLinedata() {
-  var jsondata = "http://developer.mbta.com/lib/rthr/red.json";
+  var jsondata = "https://nameless-lowlands-92045.herokuapp.com/redline.json";
 
   Alewife.addListener("mouseover", function() {
     infowindow.setContent("<center>" + Alewife.title + "</br> Click for more info" + "</center>"); 
