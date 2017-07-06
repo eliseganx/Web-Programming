@@ -1,0 +1,36 @@
+html {
+  font-family: "Times New Roman";
+  margin-right: 50px;
+  margin-left: 50px;
+  margin-top: 50px;
+  margin-bottom: 50px;
+}
+
+img {
+  margin: auto;
+  height: 50%;
+  width: 50%;
+}
+
+h2 {
+  font-size: 24px;
+}
+
+p {
+  font-size: 16px;
+}
+
+#injection {
+  height: 75%;
+  width: 75%;
+}
+
+#loop {
+  height: 100%;
+  width: 100%;
+}
+
+#xsscommand {
+  height: 75%;
+  width: 75%;
+}
