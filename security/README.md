@@ -1,7 +1,7 @@
 README
 
-1.
+1. I found vulnerabilities in the server-vuln.js file and wrote a report on it.
 
-2.
+2. N/A
 
-3.
+3. About 4 hours
