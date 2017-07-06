@@ -21,7 +21,7 @@
       <li>Location: The /checkins.json page of the web application. </li>
       <li>Security Risk: High; Data about the users can be taken from the web application.</li>
       </br><img id ="injection" src="injection.png" alt="injection example"/></br>
-      <li>The vulnerability was found after changing around the query string of the URL. Adding [$ne] to the URL reveals all of the checkins to the page and even the JavaScript that other students used in their logins. Because the query string can be changed, an attacker could potentially look up a certain user's login information.</li>
+      <li>The vulnerability was found after changing around the query string of the URL. In the code, it is seen that, when a login is searched using the URL, the check-ins associated with the searched login are printed. Adding [$ne] to the URL reveals all of the checkins to the page and even the JavaScript that other students used in their logins. Because the query string can be changed, an attacker could potentially look up a certain user's login information.</li>
       <li>This issue could be resolved by keeping data about the logins separate from commands.</li>
       </ul>
     </p>
